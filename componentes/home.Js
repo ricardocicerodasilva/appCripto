@@ -1,68 +1,115 @@
-import React, { useEffect, useState } from "react";
-import { view, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from "react-native";
-import { collection, onSnapshot, deleteDoc, doc } from "firebase/firestone";
-export default function Home({ navigation }) {
-    const [criptos, setCriptos] = useState([])
+import React,{ useEffect, useState } from "react";
+import { View,Text,StyleSheet,FlatList, TouchableOpacity,Alert } from "react-native";
+import { firestore } from "../Firebase";
+import { collection,onSnapshot,deleteDoc,doc } from "firebase/firestore";
+
+export default function Home({navigation}) {
+
+    const [criptos, setCriptos] = useState([]);
 
     async function deleteCripto(id) {
-        try {
-            await deleteDoc(doc(firestone, "tbmoeda", id))
-            Alert.alert("a criptomoeda foi deletada.")
-        } catch (erro) {
-            console.erro("erro ao deletar.", error)
+        try{
+            await deleteDoc(doc(firestore,"tbmoeda",id));
+            Alert.alert("A criptomoeda foi deletada.")
+        }catch(error){
+            console.error("Erro ao deletar.", error)
         }
     }
-
-    useEffect(() => {
-        const unsubcribe = onSnapshot(colection(firestore, 'tbmoeda'), (QuerySnapshot) => {
-                        QuerySnapshot.forEach(() => {
-                list.push({ ...doc.data(), id: doc.id });
-            })
+       
+    useEffect(()=>{
+        const unsubcribe = onSnapshot(collection(firestore,'tbmoeda'),(querySnapshot)=>{
+            const lista = [bitcon];
+            querySnapshot.forEach((doc)=>{
+                lista.push({...doc.data(), id: doc.id});
+            });
             setCriptos(lista);
-        })
-            return () => unsubcribe();
+        });
+        return () => unsubcribe();
+    },[]);
 
-        }, []);
-        return (
+    return(
+        <View style={estilo.container}>
             <View>
-                <View>
-                    <Text>lista de Criptomoedas</Text>
-                </View>
-                <FlatList
-                    data={criptos}
-                    renderItem={({ item }) => {
-                        return (
-                            <View>
-
-                                <TouchableOpacity onPress={() => navigation.navigate("alteraCripto", {
-                                    id: item.id,
-                                    nomeCripto: item.nomeCripto,
-                                    siglaCripto: item.siglaCripto,
-                                    valorCripto: item.valorCripto
-
-                                })}>
-                                    <View>
-                                        <Text>Criptomoeda:<Text>{item.nomeCripto}</Text></Text>
-                                        <Text>sigla:<Text>{item.siglaCripto}</Text></Text>
-                                        <Text>valor:<Text>{item.valorCripto}</Text></Text>
-                                    </View>
-
-                                </TouchableOpacity>
-                                <View>
-                                    <TouchableOpacity onPress={() => { deleteCripto(item.id) }}>
-                                        x
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        )
-                    }}
-                />
-
-
-                <TouchableOpacity onPress={() => navigation.navigate("cadastrarCriptos")}>
-
-                </TouchableOpacity>
+                <Text style={estilo.titulo} >Lista de Criptomoedas</Text>
             </View>
+            <FlatList
+                data={criptos}
+                renderItem={({item})=>{
+                    return(
+                        <View style={estilo.criptos}>
+                            <TouchableOpacity onPress={()=>navigation.navigate("AlteraCriptos",{
+                                id: item.id,
+                                nomeCripto: item.nomeCripto,
+                                siglaCripto: item.siglaCripto,
+                                valorCripto: item.valorCripto
+                            })}>
+                                <View style={estilo.itens}>
+                                    <Text> Criptomoeda: <Text>{item.nomeCripto}</Text></Text>
+                                    <Text> Sigla: <Text>{item.siglaCripto}</Text></Text>
+                                    <Text> Valor: <Text>{item.valorCripto}</Text></Text>
+                                </View>
+                            </TouchableOpacity>
+                            <View style={estilo.botaodeletar}>
+                                <TouchableOpacity onPress={()=>{deleteCripto(item.id)}}>
+                                <Text>X</Text>
+                                </TouchableOpacity>    
+                            </View>    
+                        </View>    
+                    );
+                }}
+            />
+            <TouchableOpacity onPress={()=>navigation.navigate("CadastrarCriptos")}>
+                <Text>+</Text>
+            </TouchableOpacity>
+        </View>
+    );
+}
 
-        )
-                }
+const estilo = StyleSheet.create({
+    container:{
+      flex:1,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    titulo:{
+      marginTop: 50,
+      fontSize:30,
+    },
+    itens:{
+      marginHorizontal: 10,
+      marginVertical: 10,
+      padding: 10,
+     
+    },
+    titulocriptos:{
+    fontSize: 13,
+    color:'#fff'
+    },
+    textocriptos:{
+    fontSize: 15,
+    fontWeight: "bold",
+    },
+    criptos:{
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginHorizontal: 10,
+      marginVertical: 10,
+      padding: 10,
+      backgroundColor: '#0000CD',
+      borderRadius:10
+    },
+    botaodeletar:{
+      textAlignVertical: 'center',
+      marginVertical: 10,
+    
+    },
+    addbutton:{
+    backgroundColor: '#ffffff',
+    borderRadius: 50,
+    position: 'absolute',
+    left: 20,
+    bottom: 40,
+    justifyContent: "center",
+    alignItems: "center"
+    }
+    });
