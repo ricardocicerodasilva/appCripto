@@ -17,8 +17,8 @@ export default function Home({navigation}) {
     }
        
     useEffect(()=>{
-        const unsubcribe = onSnapshot(collection(firestore,'tbmoeda'),(querySnapshot)=>{
-            const lista = [bitcon];
+        const unsubcribe = onSnapshot(collection(firestore,'tbMoedas'),(querySnapshot)=>{
+            const lista = [];
             querySnapshot.forEach((doc)=>{
                 lista.push({...doc.data(), id: doc.id});
             });
@@ -37,7 +37,7 @@ export default function Home({navigation}) {
                 renderItem={({item})=>{
                     return(
                         <View style={estilo.criptos}>
-                            <TouchableOpacity onPress={()=>navigation.navigate("AlteraCriptos",{
+                            <TouchableOpacity onPress={()=>navigation.navigate("alterarCriptos",{
                                 id: item.id,
                                 nomeCripto: item.nomeCripto,
                                 siglaCripto: item.siglaCripto,
@@ -58,7 +58,7 @@ export default function Home({navigation}) {
                     );
                 }}
             />
-            <TouchableOpacity onPress={()=>navigation.navigate("CadastrarCriptos")}>
+            <TouchableOpacity onPress={()=>navigation.navigate("cadastrarCripto")}>
                 <Text>+</Text>
             </TouchableOpacity>
         </View>
